@@ -1,0 +1,47 @@
+/* ============================================================
+   Стили конкретного проекта: HTTP Request Tester.
+   Тема подключается первой и содержит все общие токены.
+   Здесь — только то, что специфично для этого проекта.
+   ============================================================ */
+
+@import url('./theme.css');
+
+/* ---------- Дополнительные элементы страницы ---------- */
+
+/* Подсказка под заголовком ответа (метаданные запроса) */
+.response-request-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 12px;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--text-mute);
+}
+
+.response-request-info__item {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 2px 8px;
+}
+
+.response-request-info__item strong {
+    color: var(--accent-hover);
+    font-weight: 600;
+}
+
+/* Пометка «выполняется» на время запроса */
+.is-loading .btn--primary {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.is-loading .response-output {
+    color: var(--text-mute);
+}
+
+/* Блок с ошибкой (если сервер вернул не-JSON) */
+.response-output.is-error {
+    color: #fca5a5;
+}
