@@ -101,7 +101,11 @@
             const res = await fetch(API_URL, {
                 method: 'POST',
                 body: form,
-                credentials: 'same-origin'
+                credentials: 'same-origin',
+                headers: {
+                    // Обязательный заголовок для обхода CSRF-проверки на бэкенде
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
             });
 
             const data = await res.json();
@@ -114,13 +118,27 @@
 
             const r = data.response;
             const ok = r.status >= 200 && r.status < 300;
+            
             setStatus(`${r.status} ${r.status_text}`, ok ? 'ok' : 'error');
             $('response-time').textContent = `Время: ${r.time_ms} мс · Размер: ${r.size} Б`;
 
+            // Форматируем тело ответа (если JSON)
             const ct = (r.headers['content-type'] || '').toLowerCase();
-            const body = ct.includes('json') ? formatJson(r.body) : r.body;
+            let body = ct.includes('json') ? formatJson(r.body) : r.body;
 
-            $('response-output').textContent = body || '(пустой ответ)';
+            // Если тело пустое, выводим хотя бы заголовки ответа, чтобы было что смотреть
+            if (!body) {
+                if (Object.keys(r.headers).length > 0) {
+                    body = 'Заголовки ответа:\n\n';
+                    for (const [name, value] of Object.entries(r.headers)) {
+                        body += `${name}: ${value}\n`;
+                    }
+                } else {
+                    body = '(пустой ответ)';
+                }
+            }
+
+            $('response-output').textContent = body;
         } catch (err) {
             setStatus('Сетевая ошибка', 'error');
             $('response-output').textContent =

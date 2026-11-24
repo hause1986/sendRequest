@@ -17,10 +17,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
     JsonResponse::error('Метод не разрешён. Используйте POST.', 405);
 }
 
-// Проверяем, что запрос пришёл с нашего же сайта (защита от CSRF)
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-$host   = $_SERVER['HTTP_HOST']   ?? '';
-if ($origin !== '' && parse_url($origin, PHP_URL_HOST) !== $host) {
+// Защита от CSRF: требуем кастомный заголовок, который обычная HTML-форма
+// (и злоумышленник с другого сайта) отправить не сможет без CORS-preflight.
+if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
     JsonResponse::error('Cross-origin запросы запрещены.', 403);
 }
 
